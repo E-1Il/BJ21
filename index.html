@@ -244,6 +244,9 @@
 
         // Deal a card from the deck
         function dealCard() {
+            if (state.deck.length === 0) {
+                throw new Error('Deck is empty!');
+            }
             return state.deck.pop();
         }
 
@@ -252,6 +255,15 @@
             if (card.rank === 'A') return 11; // Initially treat A as 11
             if (['J', 'Q', 'K'].includes(card.rank)) return 10;
             return parseInt(card.rank);
+        }
+
+        // Check if hand is Blackjack (A + 10-point card)
+        function isBlackjack(hand) {
+            if (hand.length !== 2) return false;
+            const values = hand.map(card => getCardValue(card));
+            const hasAce = hand.some(card => card.rank === 'A');
+            const hasTen = values.some(v => v === 10);
+            return hasAce && hasTen;
         }
 
         // Calculate hand value with A as 1 or 11
@@ -266,25 +278,17 @@
             }
 
             // Adjust for aces (convert 11 to 1 if needed)
-            while (total > 21 && aces > 0) {
+            let acesAsEleven = aces;
+            while (total > 21 && acesAsEleven > 0) {
                 total -= 10;
-                aces--;
+                acesAsEleven--;
             }
 
-            const isSoft = aces > 0 && total <= 21;
+            const isSoft = acesAsEleven > 0 && total <= 21;
             const isBust = total > 21;
-            const isBlackjack = hand.length === 2 && total === 21;
+            const isBlackjackHand = isBlackjack(hand);
 
-            return { total, isSoft, isBust, isBlackjack };
-        }
-
-        // Check if hand is Blackjack (A + 10-point card)
-        function isBlackjack(hand) {
-            if (hand.length !== 2) return false;
-            const values = hand.map(card => getCardValue(card));
-            const hasAce = hand.some(card => card.rank === 'A');
-            const hasTen = values.some(v => v === 10);
-            return hasAce && hasTen;
+            return { total, isSoft, isBust, isBlackjack: isBlackjackHand };
         }
 
         // Log message to message area
