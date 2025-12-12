@@ -469,7 +469,7 @@
             let dealerValue = handValue(dealerHand);
             log(`莊家目前點數：${dealerValue.total}`);
             
-            // Dealer plays by S7 rule
+            // Dealer plays by S7.5 rule
             const dealerDrawCard = () => {
                 if (dealerValue.total >= DEALER_STAND_AT) {
                     log(`莊家點數 ${dealerValue.total} >= ${DEALER_STAND_AT}，停牌。`);
